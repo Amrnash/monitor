@@ -1,10 +1,10 @@
 import { db } from "./db";
-
+import { Filter } from "mongodb";
 export interface CreateCheck {
   name: string;
   url: string;
   path?: string;
-  port?: string;
+  port?: number;
   timeout: number;
   interval: number;
   threshold?: number;
@@ -14,7 +14,6 @@ export interface CreateCheck {
   };
   httpHeaders?: any;
 }
-type Filter = { [k in keyof CreateCheck]?: CreateCheck[keyof CreateCheck] };
 
 const checksCol = db.collection<CreateCheck>("Checks");
 export class Check {
@@ -24,15 +23,15 @@ export class Check {
     return checksCol.find().toArray();
   }
 
-  static findOne(filter: Filter) {
+  static findOne(filter: Filter<CreateCheck>) {
     return checksCol.findOne(filter);
   }
 
-  static deleteOne(filter: Filter) {
+  static deleteOne(filter: Filter<CreateCheck>) {
     return checksCol.deleteOne(filter);
   }
 
-  static updateOne(filter: Filter, update: Partial<CreateCheck>) {
+  static updateOne(filter: Filter<CreateCheck>, update: Partial<CreateCheck>) {
     return checksCol.updateOne(filter, { $set: { ...update } });
   }
   save() {

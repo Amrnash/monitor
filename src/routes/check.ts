@@ -1,7 +1,10 @@
 import { NextFunction, Request, Response, Router } from "express";
-import { Check, CreateCheck } from "../models/check";
-import { exractCheckFromBody } from "../utils/extract-check-from-body";
-import { exractUpdateCheckFromBody } from "../utils/extract-update-check-from-body";
+import { Check } from "../models/check";
+import {
+  exractCheckFromBody,
+  exractUpdateCheckFromBody,
+} from "../utils/helpers";
+
 const checkRouter = Router();
 
 checkRouter.get(
