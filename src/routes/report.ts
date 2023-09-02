@@ -14,6 +14,7 @@ reportRouter.get(
     const name = req.params.name as string;
     const results = await PollResult.findMany({ name });
 
+    console.log(results);
     // find a check with the provided name
     const check = await Check.findOne({ name });
     if (!check) next(new BadRequestError("No check matches this name!"));

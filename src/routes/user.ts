@@ -4,6 +4,8 @@ import { genSalt, hash, compare } from "bcryptjs";
 import { BadRequestError } from "../utils/bad-request-error";
 import { sign } from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
+import { Notification } from "../utils/notification";
+import { EmailSender } from "../utils/send-email";
 
 const userRouter = Router();
 
@@ -17,13 +19,18 @@ userRouter.post(
         return next(new BadRequestError("Email already exists"));
       const salt = await genSalt(10);
       const hashedPassword = await hash(password, salt);
+      const uuid = uuidv4();
       const newUser = {
         name,
         email,
         password: hashedPassword,
         verified: false,
-        verificationId: uuidv4(),
+        verificationId: uuid,
       };
+
+      const notification = new Notification(new EmailSender());
+      notification.sendNotification(email, uuid); // currently not working
+
       const user = await new User(newUser).save();
       const token = sign(user, process.env.JWT_SECRET!);
       return res.send({ data: { token } });
