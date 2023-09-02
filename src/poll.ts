@@ -1,31 +1,41 @@
-import { Check } from "./models/check";
+import { Check, CreateCheck } from "./models/check";
 import axios from "axios";
 import { UrlBuilder } from "./utils/url-builder";
-import { CreateReport } from "./models/report";
+import { PollResult } from "./models/poll-result";
 
-export async function poll() {
+async function poll(check: CreateCheck) {
+  const builder = new UrlBuilder();
+  builder.setUrl(check.url).setPort(check.port).setPath(check.path);
+  let pollResult: PollResult;
+  try {
+    const startTime = Date.now();
+    await axios.get(builder.url, {
+      timeout: check.timeout,
+      headers: check.httpHeaders,
+    });
+
+    const endTime = Date.now();
+    const responseTime = endTime - startTime;
+    pollResult = new PollResult({
+      date: new Date(),
+      isAvailable: true,
+      name: check.name,
+      responseTime,
+    });
+  } catch (error) {
+    pollResult = new PollResult({
+      date: new Date(),
+      isAvailable: false,
+      name: check.name,
+      responseTime: 0,
+    });
+  }
+  pollResult.save();
+}
+
+export async function runChecks() {
   const checks = await Check.findAll();
   for (const check of checks) {
-    setInterval(async () => {
-      const builder = new UrlBuilder();
-      builder.setUrl(check.url).setPort(check.port).setPath(check.path);
-      const record = {} as CreateReport["history"][0];
-      try {
-        const startTime = Date.now();
-        await axios.get(builder.url, {
-          timeout: check.timeout,
-          headers: check.httpHeaders,
-        });
-        const endTime = Date.now();
-        const responseTime = endTime - startTime;
-        record.isAvailable = true;
-        record.date = new Date();
-        record.responseTime = responseTime;
-      } catch (error) {
-        record.isAvailable = false;
-        record.responseTime = 0;
-        record.date = new Date();
-      }
-    }, check.interval);
+    setInterval(async () => poll(check), check.interval);
   }
 }

@@ -1,14 +1,17 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { Check } from "../models/check";
+import { requireAuth } from "../middlewares/requireAuth";
 import {
   exractCheckFromBody,
   exractUpdateCheckFromBody,
 } from "../utils/helpers";
+import { BadRequestError } from "../utils/bad-request-error";
 
 const checkRouter = Router();
 
 checkRouter.get(
   "/",
+  requireAuth,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const checks = await Check.findAll();
@@ -21,12 +24,15 @@ checkRouter.get(
 
 checkRouter.get(
   "/:name",
+  requireAuth,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const checkName = req.params.name as string;
       const check = await Check.findOne({ name: checkName });
       if (!check) {
-        next(new Error("Could not find a check with the provided name"));
+        next(
+          new BadRequestError("Could not find a check with the provided name")
+        );
       }
       return res.send({ data: { check } });
     } catch (error) {
@@ -37,6 +43,7 @@ checkRouter.get(
 
 checkRouter.post(
   "/",
+  requireAuth,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const check = exractCheckFromBody(req.body);
@@ -55,6 +62,7 @@ checkRouter.post(
 
 checkRouter.delete(
   "/:name",
+  requireAuth,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const name = req.params.name as string;
@@ -68,6 +76,7 @@ checkRouter.delete(
 
 checkRouter.put(
   "/:name",
+  requireAuth,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const name = req.params.name as string;

@@ -23,6 +23,8 @@ export function exractUpdateCheckFromBody(body: any) {
     port,
     threshold,
   };
+
+  // filter undefined values
   const filteredCheck: Partial<CreateCheck> = {};
   for (const key in check) {
     if (check[key as keyof typeof check]) {

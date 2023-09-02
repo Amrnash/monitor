@@ -1,14 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import { app } from "./app";
+import { runChecks } from "./poll";
 
 require("dotenv").config();
 const PORT = process.env.PORT;
 
-app.get("/test", (req: Request, res: Response, next: NextFunction) => {
-  console.log("testing...");
-  res.send({});
-});
 app.listen(PORT, () => {
-  // poll();
+  runChecks();
   console.log(`Server is running on ${PORT}`);
 });
