@@ -1,14 +1,27 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { PollResult } from "../models/poll-result";
+import { Check } from "../models/check";
+import { BadRequestError } from "../utils/bad-request-error";
+import { NotAuthorziedError } from "../utils/not-authorized-error";
+import { requireAuth } from "../middlewares/requireAuth";
 
 const reportRouter = Router();
 
 reportRouter.get(
   "/:name",
+  requireAuth,
   async (req: Request, res: Response, next: NextFunction) => {
     const name = req.params.name as string;
     const results = await PollResult.findMany({ name });
 
+    // find a check with the provided name
+    const check = await Check.findOne({ name });
+    if (!check) next(new BadRequestError("No check matches this name!"));
+
+    // check if user owns this check
+    if (!(check?.user === req.context.currentUser._id)) {
+      return next(new NotAuthorziedError());
+    }
     results.sort(
       (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
     );

@@ -1,6 +1,7 @@
 import { db } from "./db";
-import { Filter, WithId } from "mongodb";
+import { Filter, ObjectId, WithId } from "mongodb";
 export interface CreateUser {
+  _id?: ObjectId;
   name: string;
   email: string;
   password: string;

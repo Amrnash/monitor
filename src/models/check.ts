@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { Filter } from "mongodb";
+import { Filter, ObjectId } from "mongodb";
 export interface CreateCheck {
   name: string;
   url: string;
@@ -13,14 +13,15 @@ export interface CreateCheck {
     password: string;
   };
   httpHeaders?: any;
+  user: ObjectId;
 }
 
 const checksCol = db.collection<CreateCheck>("Checks");
 export class Check {
   constructor(public check: CreateCheck) {}
 
-  static findAll() {
-    return checksCol.find().toArray();
+  static findAll(filter: Filter<CreateCheck>) {
+    return checksCol.find(filter).toArray();
   }
 
   static findOne(filter: Filter<CreateCheck>) {

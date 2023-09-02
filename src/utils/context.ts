@@ -1,5 +1,5 @@
-import { JwtPayload } from "jsonwebtoken";
+import { CreateUser } from "../models/user";
 
 export interface Context {
-  currentUser: JwtPayload | string;
+  currentUser: CreateUser;
 }

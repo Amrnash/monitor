@@ -35,7 +35,7 @@ export function exractUpdateCheckFromBody(body: any) {
   return filteredCheck;
 }
 
-export function exractCheckFromBody(body: any) {
+export function exractCheckFromBody(req: any, body: any) {
   const {
     interval,
     name,
@@ -57,6 +57,8 @@ export function exractCheckFromBody(body: any) {
     path,
     port,
     threshold,
+    user: req.context.currentUser._id,
   };
+
   return check;
 }

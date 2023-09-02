@@ -6,6 +6,7 @@ import {
   exractUpdateCheckFromBody,
 } from "../utils/helpers";
 import { BadRequestError } from "../utils/bad-request-error";
+import { NotAuthorziedError } from "../utils/not-authorized-error";
 
 const checkRouter = Router();
 
@@ -14,7 +15,7 @@ checkRouter.get(
   requireAuth,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const checks = await Check.findAll();
+      const checks = await Check.findAll({ user: req.context.currentUser._id });
       res.send({ data: { checks } });
     } catch (error) {
       next(error);
@@ -29,6 +30,9 @@ checkRouter.get(
     try {
       const checkName = req.params.name as string;
       const check = await Check.findOne({ name: checkName });
+      if (!(req.context.currentUser._id === check?.user)) {
+        return next(new NotAuthorziedError());
+      }
       if (!check) {
         next(
           new BadRequestError("Could not find a check with the provided name")
@@ -46,8 +50,9 @@ checkRouter.post(
   requireAuth,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const check = exractCheckFromBody(req.body);
+      const check = exractCheckFromBody(req, req.body);
       const checkExists = await Check.findOne({ name: check.name });
+
       if (checkExists)
         return next(new Error("A Check with this name already exists!"));
 
@@ -66,6 +71,10 @@ checkRouter.delete(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const name = req.params.name as string;
+      const check = await Check.findOne({ name });
+      if (!(req.context.currentUser._id === check?.user)) {
+        return next(new NotAuthorziedError());
+      }
       await Check.deleteOne({ name });
       return res.send({ message: "Check Deleted!" });
     } catch (error) {
@@ -81,6 +90,10 @@ checkRouter.put(
     try {
       const name = req.params.name as string;
       const update = exractUpdateCheckFromBody(req.body);
+      const check = await Check.findOne({ name });
+      if (!(req.context.currentUser._id === check?.user)) {
+        return next(new NotAuthorziedError());
+      }
       await Check.updateOne({ name }, update);
       return res.send({ message: "Check Updated!" });
     } catch (error) {

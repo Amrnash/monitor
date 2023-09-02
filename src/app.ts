@@ -11,7 +11,9 @@ app.use("/report", reportRouter);
 app.use("/check", checkRouter);
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof CustomError) {
-    return res.send(err.serializeError());
+    return res
+      .status(err.serializeError().error.status)
+      .send(err.serializeError());
   } else {
     res
       .status(500)

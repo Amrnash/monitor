@@ -25,7 +25,7 @@ userRouter.post(
         verificationId: uuidv4(),
       };
       const user = await new User(newUser).save();
-      const token = sign({ user }, process.env.JWT_SECRET!);
+      const token = sign(user, process.env.JWT_SECRET!);
       return res.send({ data: { token } });
     } catch (error) {
       next(error);
@@ -40,6 +40,9 @@ userRouter.post(
     const user = await User.findOne({ verificationId });
     if (!user) return next(new BadRequestError("Invalid verification id"));
     await User.updateOne({ _id: user._id }, { verified: true });
+    user.verified = true;
+    const token = sign(user, process.env.JWT_SECRET!);
+    return res.send({ data: { token } });
   }
 );
 
