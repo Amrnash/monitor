@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { PollResult } from "../models/poll-result";
 import { Check } from "../models/check";
-import { BadRequestError } from "../utils/bad-request-error";
-import { NotAuthorziedError } from "../utils/not-authorized-error";
+import { BadRequestError } from "../errors/bad-request-error";
+import { NotAuthorziedError } from "../errors/not-authorized-error";
 import { requireAuth } from "../middlewares/requireAuth";
 
 const reportRouter = Router();

@@ -5,8 +5,8 @@ import {
   exractCheckFromBody,
   exractUpdateCheckFromBody,
 } from "../utils/helpers";
-import { BadRequestError } from "../utils/bad-request-error";
-import { NotAuthorziedError } from "../utils/not-authorized-error";
+import { BadRequestError } from "../errors/bad-request-error";
+import { NotAuthorziedError } from "../errors/not-authorized-error";
 
 const checkRouter = Router();
 

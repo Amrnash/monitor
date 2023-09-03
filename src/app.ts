@@ -2,7 +2,7 @@ import express, { Request, Response, NextFunction } from "express";
 import { checkRouter } from "./routes/check";
 import { reportRouter } from "./routes/report";
 import { userRouter } from "./routes/user";
-import { CustomError } from "./utils/custom-error";
+import { CustomError } from "./errors/custom-error";
 
 const app = express();
 app.use(express.json());

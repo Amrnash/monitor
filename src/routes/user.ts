@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { User } from "../models/user";
 import { genSalt, hash, compare } from "bcryptjs";
-import { BadRequestError } from "../utils/bad-request-error";
+import { BadRequestError } from "../errors/bad-request-error";
 import { sign } from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 import { Notification } from "../channels/notification";

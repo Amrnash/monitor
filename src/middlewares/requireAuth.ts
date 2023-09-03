@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { verify } from "jsonwebtoken";
-import { BadRequestError } from "../utils/bad-request-error";
-import { NotAuthorziedError } from "../utils/not-authorized-error";
+import { BadRequestError } from "../errors/bad-request-error";
+import { NotAuthorziedError } from "../errors/not-authorized-error";
 import { Context } from "../utils/context";
 import { CreateUser, User } from "../models/user";
 
