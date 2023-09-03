@@ -1,23 +1,24 @@
 import nodemailer from "nodemailer";
-import { Sender } from "./notification";
-export class EmailSender implements Sender {
+import { NotificationChannel } from "./notification";
+
+export class EmailChannel implements NotificationChannel {
   private transporter: nodemailer.Transporter;
-  constructor() {
+  constructor(public to: string, public message: string) {
     this.transporter = nodemailer.createTransport({
       host: "smtp.mailgun.org",
       port: 587,
       auth: {
-        user: "postmaster@sandbox80c5093e490144dabd5f5c7d6043e8d9.mailgun.org",
-        pass: "b4f97900ad3808145b415a545fc55840-451410ff-28b6d86c",
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASSWORD,
       },
     });
   }
-  async send(to: string, message: string): Promise<void> {
+  async send(): Promise<void> {
     return await this.transporter.sendMail({
       from: "postmaster@sandbox80c5093e490144dabd5f5c7d6043e8d9.mailgun.org",
-      to,
+      to: this.to,
       subject: "Hello",
-      text: message,
+      text: this.message,
     });
   }
 }

@@ -2,8 +2,9 @@ import { Check, CreateCheck } from "./models/check";
 import axios from "axios";
 import { UrlBuilder } from "./utils/url-builder";
 import { PollResult } from "./models/poll-result";
-import { EmailSender } from "./utils/send-email";
-import { Notification } from "./utils/notification";
+import { EmailChannel } from "./channels/email-channel";
+import { NotificationManager } from "./channels/notification";
+import { WebhookChannel } from "./channels/webhook-channel";
 
 async function poll(check: CreateCheck) {
   const builder = new UrlBuilder();
@@ -31,8 +32,11 @@ async function poll(check: CreateCheck) {
       name: check.name,
       responseTime: 0,
     });
-    const notification = new Notification(new EmailSender());
-    notification.sendNotification("", `Service ${check.name} is down`); // currently not working
+    const manager = new NotificationManager([
+      new EmailChannel("", `Service ${check.name} is down`), // currently not working
+      new WebhookChannel("", ""),
+    ]);
+    manager.sendNotification();
   }
   pollResult.save();
 }

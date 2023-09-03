@@ -4,8 +4,8 @@ import { genSalt, hash, compare } from "bcryptjs";
 import { BadRequestError } from "../utils/bad-request-error";
 import { sign } from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
-import { Notification } from "../utils/notification";
-import { EmailSender } from "../utils/send-email";
+import { Notification } from "../channels/notification";
+import { EmailSender } from "../channels/email-channel";
 
 const userRouter = Router();
 
